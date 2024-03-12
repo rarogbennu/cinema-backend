@@ -10,7 +10,6 @@ on:
 
 jobs:
   build:
-    if: github.ref == 'refs/heads/master' # Only execute this job for the master branch
     runs-on: ubuntu-latest
 
     steps:
