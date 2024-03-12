@@ -35,12 +35,12 @@ public class InitDataCinema implements ApplicationRunner {
 
     public void initScreens() {
         List<Screen> screens = List.of(
-                new Screen("Screen 1", 240, 20),
-                new Screen("Screen 2", 240, 20),
-                new Screen("Screen 3", 320, 22),
-                new Screen("Screen 4", 320, 22),
-                new Screen("Screen 5", 400, 25),
-                new Screen("Screen 6", 400, 25)
+                new Screen("Screen 1", 24, 20),
+                new Screen("Screen 2", 24, 20),
+                new Screen("Screen 3", 32, 22),
+                new Screen("Screen 4", 32, 22),
+                new Screen("Screen 5", 40, 25),
+                new Screen("Screen 6", 40, 25)
         );
 
         screenRepository.saveAll(screens);
@@ -76,4 +76,6 @@ public class InitDataCinema implements ApplicationRunner {
             screenRepository.save(screen);
         }
     }
+
+    //this is the test
 }
