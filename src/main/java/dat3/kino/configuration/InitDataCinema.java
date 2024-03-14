@@ -77,5 +77,5 @@ public class InitDataCinema implements ApplicationRunner {
         }
     }
 
-    //this askjdjkasdkjkjasdjksadjkaksdjis the test
+    //this the test
 }
