@@ -1,11 +1,13 @@
 package dat3.kino.dto;
 
+import dat3.kino.entity.Cinema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -19,12 +21,17 @@ public class CinemaDTO {
     private LocalDateTime created;
     private LocalDateTime edited;
 
-    public CinemaDTO(int id, String name, String location, List<ScreenDTO> screens, LocalDateTime created, LocalDateTime edited) {
-        this.id = id;
-        this.name = name;
-        this.location = location;
-        this.screens = screens;
-        this.created = created;
-        this.edited = edited;
+    public CinemaDTO(Cinema c, boolean includeAll) {
+        this.id = c.getId();
+        this.name = c.getName();
+        this.location = c.getLocation();
+        if (includeAll) {
+            this.created = c.getCreated();
+            this.edited = c.getEdited();
+        }
+        // Convert List<Screen> to List<ScreenDTO>
+        this.screens = c.getScreens().stream()
+                .map(screen -> new ScreenDTO(screen, false))
+                .collect(Collectors.toList());
     }
 }

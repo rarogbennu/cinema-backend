@@ -32,6 +32,7 @@ public class Cinema {
             joinColumns = @JoinColumn(name = "cinema_id"),
             inverseJoinColumns = @JoinColumn(name = "screen_id")
     )
+
     private List<Screen> screens;
 
     @CreationTimestamp

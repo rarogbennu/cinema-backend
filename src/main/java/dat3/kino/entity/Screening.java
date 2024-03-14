@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -38,5 +39,12 @@ public class Screening {
         this.movie = movie;
         this.cinema = cinema;
         this.screen = screen;
+    }
+
+    // Method to check if a given seat ID belongs to the associated screen
+    public boolean isSeatValidForScreen(int seatId) {
+        return getScreen().getSeats().stream()
+                .map(Seat::getId)
+                .anyMatch(id -> Objects.equals(id, seatId));
     }
 }

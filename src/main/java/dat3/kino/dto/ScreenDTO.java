@@ -1,5 +1,6 @@
 package dat3.kino.dto;
 
+import dat3.kino.entity.Screen;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,12 +19,14 @@ public class ScreenDTO {
     private LocalDateTime created;
     private LocalDateTime edited;
 
-    public ScreenDTO(int id, String name, int capacity, int rows, LocalDateTime created, LocalDateTime edited) {
-        this.id = id;
-        this.name = name;
-        this.capacity = capacity;
-        this.rows = rows;
-        this.created = created;
-        this.edited = edited;
+    public ScreenDTO(Screen s, boolean includeAll) {
+        this.id = s.getId();
+        this.name = s.getName();
+        this.capacity = s.getCapacity();
+        this.rows = s.getRows();
+        if (includeAll) {
+            this.created = s.getCreated();
+            this.edited = s.getEdited();
+        }
     }
 }
