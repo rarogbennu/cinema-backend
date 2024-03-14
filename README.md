@@ -1,3 +1,5 @@
+[![Build and deploy JAR app to Azure Web App - restfulkino](https://github.com/rarogbennu/cinema-backend/actions/workflows/master_restfulkino.yml/badge.svg)](https://github.com/rarogbennu/cinema-backend/actions/workflows/master_restfulkino.yml)
+
 # startcode-with-security
 
 [Supplementing Google Doc](https://docs.google.com/document/d/1k5T7rRSrGetjuMdYoErk4ToZTk22QyBpR-x17nmtRos/edit?usp=sharing)
