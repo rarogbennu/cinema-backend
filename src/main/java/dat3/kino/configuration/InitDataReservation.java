@@ -41,7 +41,7 @@ public class InitDataReservation implements ApplicationRunner {
         initScreenings();
         initReservations();
         initTotalReservation();
-
+        addReservationsToTotalReservationAndUpdate();
     }
 
     public void initMovies() {
@@ -56,6 +56,7 @@ public class InitDataReservation implements ApplicationRunner {
         Duration durationDudeWheresMyCar = Duration.ofHours(1).plusMinutes(30);
         Movie movie3 = new Movie("Dude, Where's My Car?", durationDudeWheresMyCar, false);
         movieRepository.save(movie3);
+        System.out.println("Movies updated successfully.");
     }
 
     public void initScreenings() {
@@ -75,6 +76,7 @@ public class InitDataReservation implements ApplicationRunner {
         Screening screening3 = new Screening(now.plusDays(2), movie3, cinemaRoskilde, screen2);
 
         screeningRepository.saveAll(List.of(screening1, screening2, screening3));
+        System.out.println("Screenings updated successfully.");
     }
 
     public void initReservations() {
@@ -90,8 +92,8 @@ public class InitDataReservation implements ApplicationRunner {
         }
 
         // Create a reservation for the screening and seat
-        Reservation reservation = new Reservation(screening, seat, "TestUser");
-        reservationRepository.save(reservation);
+        Reservation reservation1 = new Reservation(screening, seat, "TestUser");
+        reservationRepository.save(reservation1);
 
         Screening screening1 = screeningRepository.findById(1).orElseThrow(() ->
                 new RuntimeException("Screening not found"));
@@ -103,39 +105,38 @@ public class InitDataReservation implements ApplicationRunner {
         }
 
         // Create a reservation for the screening and seat
-        Reservation reservation1 = new Reservation(screening1, seat1, "TestUser1");
-        reservationRepository.save(reservation1);
+        Reservation reservation2 = new Reservation(screening1, seat1, "TestUser1");
+        reservationRepository.save(reservation2);
+        System.out.println("Reservations updated successfully.");
     }
 
     public void initTotalReservation() {
-        // Retrieve the reservations from the database
-        System.out.println("Retrieving reservations from the database...");
+        TotalReservation totalReservation1 = new TotalReservation();
+        totalReservationRepository.save(totalReservation1);
+    }
+
+    public void addReservationsToTotalReservationAndUpdate() {
+        // Find reservations by ID 1 and 2
         Reservation reservation1 = reservationRepository.findById(1).orElseThrow(() ->
                 new RuntimeException("Reservation with ID 1 not found"));
-        System.out.println("Reservation 1 retrieved: " + reservation1);
 
         Reservation reservation2 = reservationRepository.findById(2).orElseThrow(() ->
                 new RuntimeException("Reservation with ID 2 not found"));
-        System.out.println("Reservation 2 retrieved: " + reservation2);
 
-        // Create a total reservation and add the reservations to it
-        System.out.println("Creating TotalReservation object...");
-        TotalReservation totalReservation = new TotalReservation();
-        System.out.println("TotalReservation object created: " + totalReservation);
+        TotalReservation totalReservation = totalReservationRepository.findById(1).orElseThrow(() ->
+                new RuntimeException("TotalReservation with ID 1 not found"));
 
         totalReservation.addReservation(reservation1);
-        System.out.println("Reservation 1 added to TotalReservation: " + totalReservation);
-
         totalReservation.addReservation(reservation2);
-        System.out.println("Reservation 2 added to TotalReservation: " + totalReservation);
 
-        // Save the total reservation to the database
-        System.out.println("Saving TotalReservation to the database...");
-        totalReservationRepository.save(totalReservation);
-        System.out.println("TotalReservation saved successfully.");
+        reservation1.setTotalReservation(totalReservation);
+        reservation2.setTotalReservation(totalReservation);
+
+        reservationRepository.save(reservation1);
+        reservationRepository.save(reservation2);
+
+        System.out.println("TotalReservations updated successfully.");
     }
-
-
 
     // RESERVATION WITH NO CHECK
     //    public void initReservations(){

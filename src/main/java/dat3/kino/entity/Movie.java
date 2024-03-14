@@ -24,9 +24,6 @@ public class Movie {
 
     private boolean is3D;
 
-    @ManyToOne
-    private Screening screening;
-
     public Movie(String name, Duration duration, boolean is3D) {
         this.name = name;
         this.duration = duration;

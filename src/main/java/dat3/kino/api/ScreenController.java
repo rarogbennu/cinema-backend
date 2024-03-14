@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/screens")
+@RequestMapping("/screens")
 public class ScreenController {
 
     private final ScreenService screenService;
@@ -18,7 +18,10 @@ public class ScreenController {
     }
 
     @GetMapping
-    public List<ScreenDTO> getAllScreens(){
+    public List<ScreenDTO> getAllScreens(@RequestParam(required = false) String Cinema) {
+        if (Cinema != null) {
+            System.out.println(Cinema);
+        }
         return screenService.getAllScreens();
     }
 
