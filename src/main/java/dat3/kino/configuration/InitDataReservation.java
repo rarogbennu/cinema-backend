@@ -1,7 +1,9 @@
 package dat3.kino.configuration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import dat3.kino.entity.*;
 import dat3.kino.repository.*;
+import dat3.kino.service.MovieService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -12,31 +14,35 @@ import java.util.List;
 
 @Component
 public class InitDataReservation implements ApplicationRunner {
-    private final MovieRepository movieRepository;
     private final CinemaRepository cinemaRepository;
     private final ScreenRepository screenRepository;
     private final ScreeningRepository screeningRepository;
     private final ReservationRepository reservationRepository;
     private final SeatRepository seatRepository;
     private final TotalReservationRepository totalReservationRepository;
+    private final MovieService movieService;
+    private final MovieRepository movieRepository;
 
 
-    public InitDataReservation(MovieRepository movieRepository,
-                               CinemaRepository cinemaRepository,
+    public InitDataReservation(CinemaRepository cinemaRepository,
                                ScreenRepository screenRepository,
                                ScreeningRepository screeningRepository,
-                               ReservationRepository reservationRepository, SeatRepository seatRepository, TotalReservationRepository totalReservationRepository) {
-        this.movieRepository = movieRepository;
+                               ReservationRepository reservationRepository,
+                               SeatRepository seatRepository,
+                               TotalReservationRepository totalReservationRepository,
+                               MovieService movieService, MovieRepository movieRepository) {
         this.cinemaRepository = cinemaRepository;
         this.screenRepository = screenRepository;
         this.screeningRepository = screeningRepository;
         this.reservationRepository = reservationRepository;
         this.seatRepository = seatRepository;
         this.totalReservationRepository = totalReservationRepository;
+        this.movieService = movieService;
+        this.movieRepository = movieRepository;
     }
 
     @Override
-    public void run(ApplicationArguments args) {
+    public void run(ApplicationArguments args) throws JsonProcessingException {
         initMovies();
         initScreenings();
         initReservations();
@@ -44,37 +50,36 @@ public class InitDataReservation implements ApplicationRunner {
         addReservationsToTotalReservationAndUpdate();
     }
 
-    public void initMovies() {
-        Duration durationAvatar = Duration.ofHours(2).plusMinutes(30);
-        Movie movie1 = new Movie("Avatar", durationAvatar, true);
-        movieRepository.save(movie1);
+    public void initMovies() throws JsonProcessingException {
+        String[] imdbIds = {"tt0242423", "tt0499549", "tt0050976"};
 
-        Duration durationTheSeventhSeal = Duration.ofHours(3).plusMinutes(30);
-        Movie movie2 = new Movie("The Seventh Seal", durationTheSeventhSeal, false);
-        movieRepository.save(movie2);
+        for (String imdbId : imdbIds) {
+            movieService.addMovie(imdbId);
+        }
 
-        Duration durationDudeWheresMyCar = Duration.ofHours(1).plusMinutes(30);
-        Movie movie3 = new Movie("Dude, Where's My Car?", durationDudeWheresMyCar, false);
-        movieRepository.save(movie3);
-        System.out.println("Movies updated successfully.");
+        System.out.println("Movies added successfully.");
     }
 
     public void initScreenings() {
-        Movie movie1 = movieRepository.findByName("Avatar").orElseThrow();
-        Movie movie2 = movieRepository.findByName("The Seventh Seal").orElseThrow();
-        Movie movie3 = movieRepository.findByName("Dude, Where's My Car?").orElseThrow();
+        // Find movies by ID
+        Movie movie1 = movieRepository.findById(1).orElseThrow(() -> new RuntimeException("Movie with ID 1 not found"));
+        Movie movie2 = movieRepository.findById(2).orElseThrow(() -> new RuntimeException("Movie with ID 2 not found"));
+        Movie movie3 = movieRepository.findById(3).orElseThrow(() -> new RuntimeException("Movie with ID 3 not found"));
 
-        Cinema cinemaCopenhagen = cinemaRepository.findByName("Cinema Copenhagen").orElseThrow();
-        Cinema cinemaRoskilde = cinemaRepository.findByName("Cinema Roskilde").orElseThrow();
-        Screen screen1 = screenRepository.findByName("Screen 1").orElseThrow();
-        Screen screen2 = screenRepository.findByName("Screen 2").orElseThrow();
+        // Find cinemas and screens by name (assuming you have methods to find them by name)
+        Cinema cinemaCopenhagen = cinemaRepository.findByName("Cinema Copenhagen").orElseThrow(() -> new RuntimeException("Cinema Copenhagen not found"));
+        Cinema cinemaRoskilde = cinemaRepository.findByName("Cinema Roskilde").orElseThrow(() -> new RuntimeException("Cinema Roskilde not found"));
+        Screen screen1 = screenRepository.findByName("Screen 1").orElseThrow(() -> new RuntimeException("Screen 1 not found"));
+        Screen screen2 = screenRepository.findByName("Screen 2").orElseThrow(() -> new RuntimeException("Screen 2 not found"));
 
         LocalDateTime now = LocalDateTime.now();
 
+        // Create screenings using the found movies, cinemas, and screens
         Screening screening1 = new Screening(now, movie1, cinemaCopenhagen, screen1);
         Screening screening2 = new Screening(now.plusDays(1), movie2, cinemaCopenhagen, screen1);
         Screening screening3 = new Screening(now.plusDays(2), movie3, cinemaRoskilde, screen2);
 
+        // Save the screenings
         screeningRepository.saveAll(List.of(screening1, screening2, screening3));
         System.out.println("Screenings updated successfully.");
     }

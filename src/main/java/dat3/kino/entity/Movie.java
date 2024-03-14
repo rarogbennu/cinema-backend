@@ -1,32 +1,41 @@
 package dat3.kino.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.time.Duration;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
+
 @Entity
 @Table(name = "movie")
 public class Movie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    private int id;
 
-    private String name;
+    private String title;
+    private String year;
+    private String rated;
+    private String released;
+    private String runtime;
+    private String genre;
+    private String director;
+    private String writer;
+    private String actors;
+    @Column(length = 20000)
+    private String plot;
+    private String poster;
+    private String metascore;
+    private String imdbRating;
+    private String imdbVotes;
 
-    private Duration duration;
+    @Column(unique = true)
+    private String imdbID;
+    private String website;
+    private String response;
 
-    private boolean is3D;
-
-    public Movie(String name, Duration duration, boolean is3D) {
-        this.name = name;
-        this.duration = duration;
-        this.is3D = is3D;
-    }
 }
