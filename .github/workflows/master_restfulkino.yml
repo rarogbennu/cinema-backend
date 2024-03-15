@@ -31,7 +31,7 @@ jobs:
           retention-days: 1
 
   deploy:
-    if: github.ref == 'refs/heads/master' # Only execute this job for the master branch
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/development_notest' # Only execute this job for the master branch
     runs-on: ubuntu-latest
     needs: build
     environment:
