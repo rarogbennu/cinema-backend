@@ -30,6 +30,10 @@ public class TotalReservation {
     @UpdateTimestamp
     private LocalDateTime edited;
 
+    //number of reservations
+
+    //total price
+
     public TotalReservation() {
         this.reservations = new ArrayList<>(); // Initialize the reservations list
     }

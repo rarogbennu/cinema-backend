@@ -110,7 +110,7 @@ public class InitDataReservation implements ApplicationRunner {
         }
 
         // Create a reservation for the screening and seat
-        Reservation reservation2 = new Reservation(screening1, seat1, "TestUser1");
+        Reservation reservation2 = new Reservation(screening1, seat1, "TestUser");
         reservationRepository.save(reservation2);
         System.out.println("Reservations updated successfully.");
     }
