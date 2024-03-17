@@ -2,10 +2,13 @@ package dat3.kino.api;
 
 import dat3.kino.dto.CinemaDTO;
 import dat3.kino.service.CinemaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RestController
@@ -18,11 +21,16 @@ public class CinemaController {
         this.cinemaService = cinemaService;
     }
 
+    @Operation(summary = "Get all cinemas", description = "Get a list of all cinemas")
+    @ApiResponse(responseCode = "200", description = "List of cinemas retrieved successfully")
     @GetMapping
     public List<CinemaDTO> getAllCinemas() {
         return cinemaService.getAllCinemas();
     }
 
+    @Operation(summary = "Get cinema by ID", description = "Get details of a cinema by its ID")
+    @ApiResponse(responseCode = "200", description = "Cinema details retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "Cinema not found with the given ID")
     @GetMapping(path= "/{id}")
     public CinemaDTO getCinemaById(@PathVariable int id) {
         return cinemaService.getCinemaById(id);
