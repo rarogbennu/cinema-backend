@@ -19,4 +19,8 @@ public class Seat {
     @ManyToOne
     @JoinColumn(name = "screen_id")
     private Screen screen;
+
+    @ManyToOne
+    @JoinColumn(name = "price_category_id")
+    private PriceCategory priceCategory;
 }

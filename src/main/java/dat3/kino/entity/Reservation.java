@@ -34,16 +34,19 @@ public class Reservation {
 
     private String dummyUser;
 
+    private double price;
+
     @CreationTimestamp
     private LocalDateTime created;
 
     @UpdateTimestamp
     private LocalDateTime edited;
 
-    public Reservation(Screening screening, Seat seat, String dummyUser) {
+    public Reservation(Screening screening, Seat seat, String dummyUser, double price) {
         this.screening = screening;
         this.seat = seat;
         this.dummyUser = dummyUser;
+        this.price = price;
     }
 }
 
