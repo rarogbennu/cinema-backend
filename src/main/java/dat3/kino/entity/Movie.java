@@ -37,5 +37,4 @@ public class Movie {
     private String imdbID;
     private String website;
     private String response;
-
 }

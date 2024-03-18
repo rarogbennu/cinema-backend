@@ -3,6 +3,7 @@ package dat3.kino.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dat3.kino.api_facade.OmdbFacade;
 import dat3.kino.dto.MovieOmdbResponse;
+import dat3.kino.entity.Cinema;
 import dat3.kino.entity.Movie;
 import dat3.kino.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieService {
@@ -59,4 +63,32 @@ public class MovieService {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Could not add movie");
             }
         }
+
+    public List<MovieOmdbResponse> getAllMovies() {
+            List<Movie> movies = movieRepository.findAll();
+            return movies.stream().map(this::convertToDto).collect(Collectors.toList());
+    };
+
+    public MovieOmdbResponse convertToDto(Movie movie) {
+        MovieOmdbResponse movieDto = new MovieOmdbResponse();
+        movieDto.setTitle(movie.getTitle());
+        movieDto.setYear(movie.getYear());
+        movieDto.setRated(movie.getRated());
+        movieDto.setReleased(movie.getReleased());
+        movieDto.setRuntime(movie.getRuntime());
+        movieDto.setGenre(movie.getGenre());
+        movieDto.setDirector(movie.getDirector());
+        movieDto.setWriter(movie.getWriter());
+        movieDto.setActors(movie.getActors());
+        movieDto.setPlot(movie.getPlot());
+        movieDto.setPoster(movie.getPoster());
+        movieDto.setMetascore(movie.getMetascore());
+        movieDto.setImdbRating(movie.getImdbRating());
+        movieDto.setImdbVotes(movie.getImdbVotes());
+        movieDto.setImdbID(movie.getImdbID());
+        movieDto.setWebsite(movie.getWebsite());
+        movieDto.setResponse(movie.getResponse());
+
+        return movieDto;
     }
+}
