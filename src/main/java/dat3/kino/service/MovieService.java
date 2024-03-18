@@ -69,6 +69,13 @@ public class MovieService {
             return movies.stream().map(this::convertToDto).collect(Collectors.toList());
     };
 
+    public void deleteMovieByImdbId(String imdbId) {
+        movieRepository.findByImdbID(imdbId).ifPresentOrElse(
+                movieRepository::delete,
+                () -> { throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie not found"); }
+        );
+    }
+
     public MovieOmdbResponse convertToDto(Movie movie) {
         MovieOmdbResponse movieDto = new MovieOmdbResponse();
         movieDto.setTitle(movie.getTitle());

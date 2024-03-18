@@ -26,6 +26,7 @@ public class InitDataReservation implements ApplicationRunner {
     private final TotalReservationService totalReservationService;
 
 
+
     public InitDataReservation(CinemaRepository cinemaRepository,
                                ScreenRepository screenRepository,
                                ScreeningRepository screeningRepository,

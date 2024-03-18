@@ -26,13 +26,20 @@ public class MovieController {
         return movieService.getMovieByImdbId(imdbId);
     }
 
-    @RequestMapping("/imdbid/{imdbId}")
+    @RequestMapping("/api/imdbid/{imdbId}")
     public Movie getMovie(@PathVariable String imdbId){
         return movieService.getMovieByImdbId(imdbId);
     }
 
-    @PostMapping("/{imdbId}")
+    @PostMapping("/api/{imdbId}")
     public Movie addMovie(@PathVariable String imdbId) throws JsonProcessingException {
         return movieService.addMovie(imdbId);
     }
+
+    @DeleteMapping("api/{imdbId}")
+    public void deleteMovieByImdbId(@PathVariable String imdbId) {
+        movieService.deleteMovieByImdbId(imdbId);
+    }
+
+
 }
