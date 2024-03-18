@@ -34,11 +34,15 @@ public class Screening {
     @JoinColumn(name = "screen_id")
     private Screen screen;
 
+    @Column(name = "is_3d")
+    private boolean is3D;
+
     public Screening(LocalDateTime date, Movie movie, Cinema cinema, Screen screen) {
         this.date = date;
         this.movie = movie;
         this.cinema = cinema;
         this.screen = screen;
+        this.is3D = is3D;
     }
 
     // Method to check if a given seat ID belongs to the associated screen

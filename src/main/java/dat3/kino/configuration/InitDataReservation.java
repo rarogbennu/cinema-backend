@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import dat3.kino.entity.*;
 import dat3.kino.repository.*;
 import dat3.kino.service.MovieService;
+import dat3.kino.service.TotalReservationService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ public class InitDataReservation implements ApplicationRunner {
     private final TotalReservationRepository totalReservationRepository;
     private final MovieService movieService;
     private final MovieRepository movieRepository;
+    private final TotalReservationService totalReservationService;
 
 
     public InitDataReservation(CinemaRepository cinemaRepository,
@@ -30,7 +32,9 @@ public class InitDataReservation implements ApplicationRunner {
                                ReservationRepository reservationRepository,
                                SeatRepository seatRepository,
                                TotalReservationRepository totalReservationRepository,
-                               MovieService movieService, MovieRepository movieRepository) {
+                               MovieService movieService,
+                               MovieRepository movieRepository,
+                               TotalReservationService totalReservationService) {
         this.cinemaRepository = cinemaRepository;
         this.screenRepository = screenRepository;
         this.screeningRepository = screeningRepository;
@@ -39,6 +43,7 @@ public class InitDataReservation implements ApplicationRunner {
         this.totalReservationRepository = totalReservationRepository;
         this.movieService = movieService;
         this.movieRepository = movieRepository;
+        this.totalReservationService = totalReservationService;
     }
 
     @Override
@@ -79,39 +84,47 @@ public class InitDataReservation implements ApplicationRunner {
         Screening screening2 = new Screening(now.plusDays(1), movie2, cinemaCopenhagen, screen1);
         Screening screening3 = new Screening(now.plusDays(2), movie3, cinemaRoskilde, screen2);
 
+        // Set some of the screenings as 3D
+        screening1.set3D(true);
+        screening2.set3D(false);
+        screening3.set3D(true);
+
         // Save the screenings
         screeningRepository.saveAll(List.of(screening1, screening2, screening3));
         System.out.println("Screenings updated successfully.");
     }
 
+
     public void initReservations() {
-        // Retrieve a screening and a seat for testing
-        Screening screening = screeningRepository.findById(1).orElseThrow(() ->
-                new RuntimeException("Screening not found"));
-        Seat seat = seatRepository.findById(1).orElseThrow(() ->
-                new RuntimeException("Seat not found"));
-
-        // Check if the seat is valid for the screening's screen
-        if (!screening.isSeatValidForScreen(seat.getId())) {
-            throw new RuntimeException("Seat is not valid for the screening's screen");
-        }
-
-        // Create a reservation for the screening and seat
-        Reservation reservation1 = new Reservation(screening, seat, "TestUser");
-        reservationRepository.save(reservation1);
-
+        // Retrieve screenings and seats for testing
         Screening screening1 = screeningRepository.findById(1).orElseThrow(() ->
                 new RuntimeException("Screening not found"));
-        Seat seat1 = seatRepository.findById(2).orElseThrow(() ->
+        Seat seat1 = seatRepository.findById(1).orElseThrow(() ->
+                new RuntimeException("Seat not found"));
+        Screening screening2 = screeningRepository.findById(2).orElseThrow(() ->
+                new RuntimeException("Screening not found"));
+        Seat seat2 = seatRepository.findById(2).orElseThrow(() ->
                 new RuntimeException("Seat not found"));
 
-        if (!screening1.isSeatValidForScreen(seat1.getId())) {
+        // Check if the seats are valid for the screenings' screens
+        if (!screening1.isSeatValidForScreen(seat1.getId()) || !screening2.isSeatValidForScreen(seat2.getId())) {
             throw new RuntimeException("Seat is not valid for the screening's screen");
         }
 
-        // Create a reservation for the screening and seat
-        Reservation reservation2 = new Reservation(screening1, seat1, "TestUser");
-        reservationRepository.save(reservation2);
+        // Calculate reservation prices using TotalReservationService
+        double price1 = totalReservationService.calculateTotalPrice(screening1, screening1.getMovie(), List.of(seat1));
+        double price2 = totalReservationService.calculateTotalPrice(screening2, screening2.getMovie(), List.of(seat2));
+
+        // Print out reservation prices
+        System.out.println("Reservation Price 1: " + price1);
+        System.out.println("Reservation Price 2: " + price2);
+
+        // Create reservations
+        Reservation reservation1 = new Reservation(screening1, seat1, "TestUser", price1);
+        Reservation reservation2 = new Reservation(screening2, seat2, "TestUser", price2);
+
+        // Save reservations
+        reservationRepository.saveAll(List.of(reservation1, reservation2));
         System.out.println("Reservations updated successfully.");
     }
 
@@ -121,24 +134,32 @@ public class InitDataReservation implements ApplicationRunner {
     }
 
     public void addReservationsToTotalReservationAndUpdate() {
-        // Find reservations by ID 1 and 2
-        Reservation reservation1 = reservationRepository.findById(1).orElseThrow(() ->
-                new RuntimeException("Reservation with ID 1 not found"));
+        // Retrieve reservations by their IDs
+        Reservation reservation1 = reservationRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("Reservation with ID 1 not found"));
+        Reservation reservation2 = reservationRepository.findById(2)
+                .orElseThrow(() -> new RuntimeException("Reservation with ID 2 not found"));
 
-        Reservation reservation2 = reservationRepository.findById(2).orElseThrow(() ->
-                new RuntimeException("Reservation with ID 2 not found"));
+        // Retrieve the TotalReservation entity (assuming ID 1)
+        TotalReservation totalReservation = totalReservationRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("TotalReservation with ID 1 not found"));
 
-        TotalReservation totalReservation = totalReservationRepository.findById(1).orElseThrow(() ->
-                new RuntimeException("TotalReservation with ID 1 not found"));
-
+        // Add reservations to TotalReservation
         totalReservation.addReservation(reservation1);
         totalReservation.addReservation(reservation2);
 
+        // Calculate total price after adding reservations
+        totalReservation.calculateTotalPrice();
+
+        // Update the TotalReservation reference in reservations
         reservation1.setTotalReservation(totalReservation);
         reservation2.setTotalReservation(totalReservation);
 
-        reservationRepository.save(reservation1);
-        reservationRepository.save(reservation2);
+        // Save the updated reservations
+        reservationRepository.saveAll(List.of(reservation1, reservation2));
+
+        // Save the updated TotalReservation
+        totalReservationRepository.save(totalReservation);
 
         System.out.println("TotalReservations updated successfully.");
     }

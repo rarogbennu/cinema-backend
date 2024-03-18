@@ -34,8 +34,12 @@ public class TotalReservation {
 
     //total price
 
+    // Add total price field
+    private double totalPrice;
+
     public TotalReservation() {
         this.reservations = new ArrayList<>(); // Initialize the reservations list
+        this.totalPrice = 0.0; // Initialize total price
     }
 
     public void addReservation(Reservation reservation) {
@@ -43,5 +47,14 @@ public class TotalReservation {
         reservations.add(reservation);
         // Set the order of the reservation
         reservation.setTotalReservation(this);
+        // Update total price
+        calculateTotalPrice();
+    }
+
+    public void calculateTotalPrice() {
+        // Calculate total price by summing up the prices of all reservations
+        this.totalPrice = reservations.stream()
+                .mapToDouble(Reservation::getPrice)
+                .sum();
     }
 }
