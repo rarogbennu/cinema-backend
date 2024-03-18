@@ -2,7 +2,6 @@ package dat3.kino.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dat3.kino.dto.MovieOmdbResponse;
-import dat3.kino.dto.ReservationDTO;
 import dat3.kino.entity.Movie;
 import dat3.kino.service.MovieService;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +20,11 @@ public class MovieController {
 
     @GetMapping()
     public List<MovieOmdbResponse> getAllMovies() { return movieService.getAllMovies();}
+
+    @GetMapping("/{imdbId}")
+    public Movie getMovieByImdbId(@PathVariable String imdbId) {
+        return movieService.getMovieByImdbId(imdbId);
+    }
 
     @RequestMapping("/imdbid/{imdbId}")
     public Movie getMovie(@PathVariable String imdbId){
