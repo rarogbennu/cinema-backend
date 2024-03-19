@@ -112,6 +112,7 @@ public class TotalReservationService {
     private TotalReservationDTO convertToDTO(TotalReservation totalReservation) {
         TotalReservationDTO dto = new TotalReservationDTO();
         dto.setId(totalReservation.getId());
+        dto.setTotalPrice(totalReservation.getTotalPrice());
         // Set other fields as needed
         return dto;
     }
