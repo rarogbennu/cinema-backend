@@ -21,9 +21,9 @@ public class MovieController {
     @GetMapping()
     public List<MovieOmdbResponse> getAllMovies() { return movieService.getAllMovies();}
 
-    @GetMapping("/{imdbId}")
-    public Movie getMovieByImdbId(@PathVariable String imdbId) {
-        return movieService.getMovieByImdbId(imdbId);
+    @GetMapping("/{id}")
+    public Movie getMovieById(@PathVariable int id) {
+        return movieService.getMovieById(id);
     }
 
     @RequestMapping("/api/imdbid/{imdbId}")

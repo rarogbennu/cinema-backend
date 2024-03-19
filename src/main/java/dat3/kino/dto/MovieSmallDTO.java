@@ -12,4 +12,5 @@ public class MovieSmallDTO {
     private String title;
     private String runtime;
     private String year;
+    private String poster;
 }
