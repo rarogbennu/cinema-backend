@@ -44,6 +44,13 @@ public class ScreeningService {
         return new ScreeningDTO(screening, false);
     }
 
+    public List<ScreeningDTO> getScreeningsByCinemaId(int cinemaId) {
+        List<Screening> screenings = screeningRepository.findByCinemaId(cinemaId);
+        return screenings.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     public ScreeningDTO createScreening(ScreeningDTO screeningDTO) {
         Screening screening = new Screening();
         screening.setDate(screeningDTO.getDate());

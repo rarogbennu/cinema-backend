@@ -27,6 +27,11 @@ public class MovieService {
             this.movieRepository = movieRepository;
         }
 
+        public Movie getMovieById(int id) {
+            return movieRepository.findById(id).orElseThrow(() ->
+                    new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie not found"));
+        }
+
         public Movie getMovieByImdbId(String imdbId) {
             return movieRepository.findByImdbID(imdbId).orElseThrow(() ->
                     new ResponseStatusException(HttpStatus.NOT_FOUND, "Movie not found"));
@@ -78,6 +83,7 @@ public class MovieService {
 
     public MovieOmdbResponse convertToDto(Movie movie) {
         MovieOmdbResponse movieDto = new MovieOmdbResponse();
+        movieDto.setId(movie.getId());
         movieDto.setTitle(movie.getTitle());
         movieDto.setYear(movie.getYear());
         movieDto.setRated(movie.getRated());

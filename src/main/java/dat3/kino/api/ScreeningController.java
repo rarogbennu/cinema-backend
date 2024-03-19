@@ -39,6 +39,16 @@ public class ScreeningController {
         return screeningService.getScreeningById(id);
     }
 
+    @Operation(summary = "Get screenings by cinema ID", description = "Get a list of screenings for a specific cinema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found screenings for the cinema"),
+            @ApiResponse(responseCode = "404", description = "No screenings found for the cinema")
+    })
+    @GetMapping("/cinema/{cinemaId}")
+    public List<ScreeningDTO> getScreeningsByCinemaId(@PathVariable int cinemaId) {
+        return screeningService.getScreeningsByCinemaId(cinemaId);
+    }
+
     @Operation(summary = "Create a new screening", description = "Create a new screening")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Screening created successfully")

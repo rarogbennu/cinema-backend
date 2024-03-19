@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 public class SeatService {
 
@@ -29,18 +30,11 @@ public class SeatService {
     public SeatDTO getSeatById(int id) {
         Seat seat = seatRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
-        return new SeatDTO(seat, false);
+        return new SeatDTO(seat);
     }
 
     // Convert entity to DTO
     private SeatDTO convertToDTO(Seat seat) {
-        return new SeatDTO(seat, false);
-    }
-
-    // Get List of DTOs
-    private List<SeatDTO> convertToDTOs(List<Seat> seats) {
-        return seats.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        return new SeatDTO(seat);
     }
 }

@@ -4,12 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import dat3.kino.entity.*;
 import dat3.kino.repository.*;
 import dat3.kino.service.MovieService;
-import dat3.kino.service.TotalReservationService;
+import dat3.kino.service.BookingService;
 import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,10 +18,10 @@ public class InitDataReservation implements ApplicationRunner {
     private final ScreeningRepository screeningRepository;
     private final ReservationRepository reservationRepository;
     private final SeatRepository seatRepository;
-    private final TotalReservationRepository totalReservationRepository;
+    private final BookingRepository bookingRepository;
     private final MovieService movieService;
     private final MovieRepository movieRepository;
-    private final TotalReservationService totalReservationService;
+    private final BookingService bookingService;
 
 
 
@@ -32,19 +30,19 @@ public class InitDataReservation implements ApplicationRunner {
                                ScreeningRepository screeningRepository,
                                ReservationRepository reservationRepository,
                                SeatRepository seatRepository,
-                               TotalReservationRepository totalReservationRepository,
+                               BookingRepository bookingRepository,
                                MovieService movieService,
                                MovieRepository movieRepository,
-                               TotalReservationService totalReservationService) {
+                               BookingService bookingService) {
         this.cinemaRepository = cinemaRepository;
         this.screenRepository = screenRepository;
         this.screeningRepository = screeningRepository;
         this.reservationRepository = reservationRepository;
         this.seatRepository = seatRepository;
-        this.totalReservationRepository = totalReservationRepository;
+        this.bookingRepository = bookingRepository;
         this.movieService = movieService;
         this.movieRepository = movieRepository;
-        this.totalReservationService = totalReservationService;
+        this.bookingService = bookingService;
     }
 
     @Override
@@ -52,8 +50,8 @@ public class InitDataReservation implements ApplicationRunner {
         initMovies();
         initScreenings();
 //        initReservations();
-//        initTotalReservation();
-//        addReservationsToTotalReservationAndUpdate();
+//        initBooking();
+//        addReservationsToBookingAndUpdate();
     }
 
     public void initMovies() throws JsonProcessingException {
@@ -112,9 +110,9 @@ public class InitDataReservation implements ApplicationRunner {
 //            throw new RuntimeException("Seat is not valid for the screening's screen");
 //        }
 //
-////        // Calculate reservation prices using TotalReservationService
-////        double price1 = totalReservationService.calculateTotalPrice(screening1, screening1.getMovie(), List.of(seat1));
-////        double price2 = totalReservationService.calculateTotalPrice(screening2, screening2.getMovie(), List.of(seat2));
+////        // Calculate reservation prices using BookingService
+////        double price1 = bookingService.calculateTotalPrice(screening1, screening1.getMovie(), List.of(seat1));
+////        double price2 = bookingService.calculateTotalPrice(screening2, screening2.getMovie(), List.of(seat2));
 //
 ////        // Print out reservation prices
 ////        System.out.println("Reservation Price 1: " + price1);
@@ -129,40 +127,40 @@ public class InitDataReservation implements ApplicationRunner {
 ////        System.out.println("Reservations updated successfully.");
 ////    }
 //
-//    public void initTotalReservation() {
-//        TotalReservation totalReservation1 = new TotalReservation();
-//        totalReservationRepository.save(totalReservation1);
+//    public void initBooking() {
+//        Booking booking1 = new Booking();
+//        bookingRepository.save(booking1);
 //    }
 //
-//    public void addReservationsToTotalReservationAndUpdate() {
+//    public void addReservationsToBookingAndUpdate() {
 //        // Retrieve reservations by their IDs
 //        Reservation reservation1 = reservationRepository.findById(1)
 //                .orElseThrow(() -> new RuntimeException("Reservation with ID 1 not found"));
 //        Reservation reservation2 = reservationRepository.findById(2)
 //                .orElseThrow(() -> new RuntimeException("Reservation with ID 2 not found"));
 //
-//        // Retrieve the TotalReservation entity (assuming ID 1)
-//        TotalReservation totalReservation = totalReservationRepository.findById(1)
-//                .orElseThrow(() -> new RuntimeException("TotalReservation with ID 1 not found"));
+//        // Retrieve the Booking entity (assuming ID 1)
+//        Booking booking = bookingRepository.findById(1)
+//                .orElseThrow(() -> new RuntimeException("Booking with ID 1 not found"));
 //
-//        // Add reservations to TotalReservation
-//        totalReservation.addReservation(reservation1);
-//        totalReservation.addReservation(reservation2);
+//        // Add reservations to Booking
+//        booking.addReservation(reservation1);
+//        booking.addReservation(reservation2);
 //
 //        // Calculate total price after adding reservations
-//        totalReservation.calculateTotalPrice();
+//        booking.calculateTotalPrice();
 //
-//        // Update the TotalReservation reference in reservations
-//        reservation1.setTotalReservation(totalReservation);
-//        reservation2.setTotalReservation(totalReservation);
+//        // Update the Booking reference in reservations
+//        reservation1.setBooking(booking);
+//        reservation2.setBooking(booking);
 //
 //        // Save the updated reservations
 //        reservationRepository.saveAll(List.of(reservation1, reservation2));
 //
-//        // Save the updated TotalReservation
-//        totalReservationRepository.save(totalReservation);
+//        // Save the updated Booking
+//        bookingRepository.save(booking);
 //
-//        System.out.println("TotalReservations updated successfully.");
+//        System.out.println("Bookings updated successfully.");
 //    }
 
     // RESERVATION WITH NO CHECK

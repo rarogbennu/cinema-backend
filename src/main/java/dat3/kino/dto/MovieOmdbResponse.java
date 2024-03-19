@@ -10,6 +10,8 @@ import java.util.List;
 @Setter
 public class MovieOmdbResponse {
 
+    private int id;
+
     @JsonProperty("Title")
     private String title;
 
