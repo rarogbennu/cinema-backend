@@ -17,7 +17,7 @@ public class ReservationDTO {
     private int id;
     private int screeningId;
     private int seatId;
-    private int bookingId;
+    private int totalReservationId;
     private String dummyUser;
     private LocalDateTime created;
     private LocalDateTime edited;
@@ -26,7 +26,7 @@ public class ReservationDTO {
         this.id = r.getId();
         this.screeningId = r.getScreening().getId();
         this.seatId = r.getSeat().getId();
-        this.bookingId = r.getBooking().getId();
+        this.totalReservationId = r.getTotalReservation().getId();
         this.dummyUser = r.getDummyUser();
         if (includeAll) {
             this.created = r.getCreated();
