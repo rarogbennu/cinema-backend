@@ -1,19 +1,21 @@
 package dat3.kino.service;
 
 import dat3.kino.dto.ReservationDTO;
+import dat3.kino.dto.TotalReservationDTO;
 import dat3.kino.entity.Reservation;
 import dat3.kino.entity.Screening;
 import dat3.kino.entity.Seat;
-import dat3.kino.entity.Booking;
+import dat3.kino.entity.TotalReservation;
 import dat3.kino.entity.PriceCategory;
 import dat3.kino.repository.ReservationRepository;
 import dat3.kino.repository.ScreeningRepository;
 import dat3.kino.repository.SeatRepository;
-import dat3.kino.repository.BookingRepository;
+import dat3.kino.repository.TotalReservationRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,15 +25,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ScreeningRepository screeningRepository;
     private final SeatRepository seatRepository;
-    private final BookingRepository bookingRepository;
+    private final TotalReservationRepository totalReservationRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ScreeningRepository screeningRepository,
-                              SeatRepository seatRepository, BookingRepository bookingRepository) {
+                              SeatRepository seatRepository, TotalReservationRepository totalReservationRepository) {
         this.reservationRepository = reservationRepository;
         this.screeningRepository = screeningRepository;
         this.seatRepository = seatRepository;
-        this.bookingRepository = bookingRepository;
+        this.totalReservationRepository = totalReservationRepository;
 
     }
 
@@ -46,37 +48,78 @@ public class ReservationService {
         return convertToDTO(reservation);
     }
 
-    public ReservationDTO createReservation(ReservationDTO reservationDTO) {
-        // Find screening and seat
-        Screening screening = screeningRepository.findById(reservationDTO.getScreeningId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Screening not found"));
-        Seat seat = seatRepository.findById(reservationDTO.getSeatId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
+//    public ReservationDTO createReservation(ReservationDTO reservationDTO) {
+//        // Find screening and seat
+//        Screening screening = screeningRepository.findById(reservationDTO.getScreeningId())
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Screening not found"));
+//        Seat seat = seatRepository.findById(reservationDTO.getSeatId())
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
+//
+//        // Calculate reservation price
+//        double reservationPrice = calculateReservationPrice(screening, seat);
+//
+//        // Create a new total reservation if it doesn't exist
+//        TotalReservation totalReservation = new TotalReservation();
+//        totalReservationRepository.save(totalReservation);
+//
+//        // Create the reservation
+//        Reservation reservation = new Reservation();
+//        reservation.setScreening(screening);
+//        reservation.setSeat(seat);
+//        reservation.setDummyUser(reservationDTO.getDummyUser());
+//        reservation.setTotalReservation(totalReservation);
+//        reservation.setPrice(reservationPrice);
+//
+//        // Save reservation
+//        Reservation savedReservation = reservationRepository.save(reservation);
+//
+//        // Update total price in the associated TotalReservation
+//        totalReservation.setTotalPrice(totalReservation.getTotalPrice() + reservationPrice);
+//        totalReservationRepository.save(totalReservation);
+//
+//        // Convert saved reservation to DTO and return it
+//        return convertToDTO(savedReservation);
+//    }
 
-        // Calculate reservation price
-        double reservationPrice = calculateReservationPrice(screening, seat);
+    public TotalReservationDTO createReservation(List<ReservationDTO> reservationDTOs) {
+        // Create a new total reservation
+        TotalReservation totalReservation = new TotalReservation();
+        totalReservationRepository.save(totalReservation);
 
-        // Create a new booking if it doesn't exist
-        Booking booking = new Booking();
-        bookingRepository.save(booking);
+        // List to hold saved reservations
+        List<Reservation> savedReservations = new ArrayList<>();
 
-        // Create the reservation
-        Reservation reservation = new Reservation();
-        reservation.setScreening(screening);
-        reservation.setSeat(seat);
-        reservation.setDummyUser(reservationDTO.getDummyUser());
-        reservation.setBooking(booking);
-        reservation.setPrice(reservationPrice);
+        // Loop through reservationDTOs and create/save reservations
+        for (ReservationDTO reservationDTO : reservationDTOs) {
+            // Find screening og seat
+            Screening screening = screeningRepository.findById(reservationDTO.getScreeningId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Screening not found"));
+            Seat seat = seatRepository.findById(reservationDTO.getSeatId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
 
-        // Save reservation
-        Reservation savedReservation = reservationRepository.save(reservation);
+            // Calculate reservation price
+            double reservationPrice = calculateReservationPrice(screening, seat);
 
-        // Update total price in the associated Booking
-        booking.setTotalPrice(booking.getTotalPrice() + reservationPrice);
-        bookingRepository.save(booking);
+            // Create reservation
+            Reservation reservation = new Reservation();
+            reservation.setScreening(screening);
+            reservation.setSeat(seat);
+            reservation.setDummyUser(reservationDTO.getDummyUser());
+            reservation.setTotalReservation(totalReservation);
+            reservation.setPrice(reservationPrice);
 
-        // Convert saved reservation to DTO and return it
-        return convertToDTO(savedReservation);
+            // Save reservation
+            Reservation savedReservation = reservationRepository.save(reservation);
+            savedReservations.add(savedReservation);
+        }
+
+        // Update total price in the associated TotalReservation
+        double totalPrice = savedReservations.stream().mapToDouble(Reservation::getPrice).sum();
+        totalReservation.setTotalPrice(totalPrice);
+        totalReservationRepository.save(totalReservation);
+
+        // Convert and return the saved total reservation
+        return convertTotalReservationToDTO(totalReservation);
     }
 
 
@@ -97,6 +140,15 @@ public class ReservationService {
         return reservations.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    // Metode til at konvertere TotalReservation til TotalReservationDTO
+    private TotalReservationDTO convertTotalReservationToDTO(TotalReservation totalReservation) {
+        TotalReservationDTO totalReservationDTO = new TotalReservationDTO();
+        totalReservationDTO.setId(totalReservation.getId());
+        totalReservationDTO.setTotalPrice(totalReservation.getTotalPrice());
+        // Andre felter kan tilføjes efter behov
+        return totalReservationDTO;
     }
 
 
