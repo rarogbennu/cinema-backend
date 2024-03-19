@@ -16,12 +16,13 @@ public class SeatDTO {
 
     private int id;
     private int screenId;
+    private int priceCategoryId;
     private LocalDateTime created;
     private LocalDateTime edited;
 
     public SeatDTO(Seat seat, boolean includeAll) {
         this.id = seat.getId();
         this.screenId = seat.getScreen().getId();
-
+        this.priceCategoryId = seat.getPriceCategory().getId();
     }
 }

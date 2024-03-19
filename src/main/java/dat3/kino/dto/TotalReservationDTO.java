@@ -17,13 +17,14 @@ public class TotalReservationDTO {
     private int id;
     private LocalDateTime created;
     private LocalDateTime edited;
+    private double totalPrice;
 
     public TotalReservationDTO(TotalReservation t, boolean includeAll) {
         this.id = t.getId();
+        this.totalPrice = t.getTotalPrice();
         if (includeAll) {
             this.created = t.getCreated();
             this.edited = t.getEdited();
         }
     }
 }
-

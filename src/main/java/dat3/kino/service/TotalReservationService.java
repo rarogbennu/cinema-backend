@@ -1,13 +1,8 @@
 package dat3.kino.service;
 
 import dat3.kino.dto.TotalReservationDTO;
-import dat3.kino.entity.Movie;
-import dat3.kino.entity.Seat;
 import dat3.kino.entity.Reservation;
-import dat3.kino.entity.Screening;
 import dat3.kino.entity.TotalReservation;
-import dat3.kino.entity.PriceCategory;
-import dat3.kino.repository.PriceCategoryRepository;
 import dat3.kino.repository.TotalReservationRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,11 +15,9 @@ import java.util.stream.Collectors;
 public class TotalReservationService {
 
     private final TotalReservationRepository totalReservationRepository;
-    private final PriceCategoryRepository priceCategoryRepository;
 
-    public TotalReservationService(TotalReservationRepository totalReservationRepository, PriceCategoryRepository priceCategoryRepository) {
+    public TotalReservationService(TotalReservationRepository totalReservationRepository) {
         this.totalReservationRepository = totalReservationRepository;
-        this.priceCategoryRepository = priceCategoryRepository;
     }
 
     public List<TotalReservationDTO> getAllTotalReservations() {
@@ -42,11 +35,47 @@ public class TotalReservationService {
 
 
     public TotalReservationDTO createTotalReservation(List<Reservation> reservations) {
+        // Calculate the total price by summing up the prices of individual reservations
+        double totalPrice = reservations.stream()
+                .mapToDouble(Reservation::getPrice)
+                .sum();
+
+        // Apply discounts based on the total number of reservations
+        int orderSize = reservations.size();
+        if (orderSize >= 6 && orderSize <= 10) {
+            // No change in price
+        } else if (orderSize >= 11) {
+            totalPrice *= 0.95; // 5% discount for orders of 11 or more seats
+        } else {
+            totalPrice *= 1.05; // 5% additional charge for orders of 1-5 seats
+        }
+
+        // Log totalPrice before saving
+        System.out.println("Total Price Before Discount: " + totalPrice);
+
+        // Create and save TotalReservation
         TotalReservation totalReservation = new TotalReservation();
-        totalReservation.getReservations().addAll(reservations); // Reservation to TotalReservation
+        totalReservation.setReservations(reservations);
+        totalReservation.setTotalPrice(totalPrice);
+
+        // Save TotalReservation
         TotalReservation savedTotalReservation = totalReservationRepository.save(totalReservation);
+
+        // Log savedTotalReservation before updating total price
+        System.out.println("TotalReservation Before Update: " + savedTotalReservation);
+
+        // Update total price in TotalReservation entity with the discounted price
+        savedTotalReservation.setTotalPrice(totalPrice);
+        savedTotalReservation = totalReservationRepository.save(savedTotalReservation);
+
+        // Log savedTotalReservation after updating total price
+        System.out.println("TotalReservation After Update: " + savedTotalReservation);
+
         return convertToDTO(savedTotalReservation);
     }
+
+
+
 
 
 
@@ -73,50 +102,6 @@ public class TotalReservationService {
     }
 
 
-    public double calculateTotalPrice(Screening screening, Movie movie, List<Seat> selectedSeats) {
-        double totalPrice = 0.0;
 
-        // Fetch price categories from database
-        List<PriceCategory> priceCategories = priceCategoryRepository.findAll();
-
-        // Extract movie runtime without the " min" suffix
-        int movieRuntime = extractMovieRuntime(movie.getRuntime());
-
-        // Calculate the base price for each seat based on its price category
-        for (Seat seat : selectedSeats) {
-            PriceCategory priceCategory = seat.getPriceCategory();
-            double seatPrice = priceCategory.getPrice();
-
-            // Adjust price for 3D screenings
-            if (screening.is3D()) {
-                seatPrice += priceCategory.getAdditional3DCost();
-            }
-
-            // Adjust price for long movies
-            if (movieRuntime > 150) {
-                seatPrice += priceCategory.getAdditionalLongMovieCost();
-            }
-
-            totalPrice += seatPrice;
-        }
-
-        // Apply discounts based on order size
-        int orderSize = selectedSeats.size();
-        if (orderSize >= 6 && orderSize <= 10) {
-            // No change in price
-        } else if (orderSize >= 11) {
-            totalPrice *= 0.95; // 5% discount for orders of 11 or more seats
-        } else {
-            totalPrice *= 1.05; // 5% additional charge for orders of 1-5 seats
-        }
-
-        return totalPrice;
-    }
-
-    private int extractMovieRuntime(String runtime) {
-        // Remove " min" suffix and extract only the number
-        String[] parts = runtime.split(" ");
-        return Integer.parseInt(parts[0]);
-    }
 
 }

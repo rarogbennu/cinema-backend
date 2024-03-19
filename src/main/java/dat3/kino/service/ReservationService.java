@@ -5,6 +5,7 @@ import dat3.kino.entity.Reservation;
 import dat3.kino.entity.Screening;
 import dat3.kino.entity.Seat;
 import dat3.kino.entity.TotalReservation;
+import dat3.kino.entity.PriceCategory;
 import dat3.kino.repository.ReservationRepository;
 import dat3.kino.repository.ScreeningRepository;
 import dat3.kino.repository.SeatRepository;
@@ -46,28 +47,38 @@ public class ReservationService {
     }
 
     public ReservationDTO createReservation(ReservationDTO reservationDTO) {
-        Reservation reservation = new Reservation();
-
         // Find screening and seat
         Screening screening = screeningRepository.findById(reservationDTO.getScreeningId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Screening not found"));
         Seat seat = seatRepository.findById(reservationDTO.getSeatId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
 
-        // Create a new total reservation
+        // Calculate reservation price
+        double reservationPrice = calculateReservationPrice(screening, seat);
+
+        // Create a new total reservation if it doesn't exist
         TotalReservation totalReservation = new TotalReservation();
         totalReservationRepository.save(totalReservation);
 
-        // Set reservation attributes
+        // Create the reservation
+        Reservation reservation = new Reservation();
         reservation.setScreening(screening);
         reservation.setSeat(seat);
         reservation.setDummyUser(reservationDTO.getDummyUser());
         reservation.setTotalReservation(totalReservation);
+        reservation.setPrice(reservationPrice);
 
         // Save reservation
         Reservation savedReservation = reservationRepository.save(reservation);
+
+        // Update total price in the associated TotalReservation
+        totalReservation.setTotalPrice(totalReservation.getTotalPrice() + reservationPrice);
+        totalReservationRepository.save(totalReservation);
+
+        // Convert saved reservation to DTO and return it
         return convertToDTO(savedReservation);
     }
+
 
     public void deleteReservation(int id) {
         if (!reservationRepository.existsById(id)) {
@@ -87,5 +98,39 @@ public class ReservationService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
+
+    public double calculateReservationPrice(Screening screening, Seat seat) {
+        // Fetch the associated price category for the seat
+        PriceCategory priceCategory = seat.getPriceCategory();
+
+        // Calculate the base price for the seat based on its price category
+        double basePrice = priceCategory.getPrice();
+
+        // Adjust price for 3D screenings
+        if (screening.is3D()) {
+            basePrice += priceCategory.getAdditional3DCost();
+        }
+
+        // Adjust price for long movies
+        if (isLongMovie(screening.getMovie().getRuntime())) {
+            basePrice += priceCategory.getAdditionalLongMovieCost();
+        }
+
+        return basePrice;
+    }
+
+    // Method to check if a movie is considered long based on its runtime
+    private boolean isLongMovie(String runtime) {
+        int movieRuntime = extractMovieRuntime(runtime);
+        return movieRuntime > 150;
+    }
+
+    // Method to extract movie runtime without the " min" suffix
+    private int extractMovieRuntime(String runtime) {
+        String[] parts = runtime.split(" ");
+        return Integer.parseInt(parts[0]);
+    }
+
 }
 

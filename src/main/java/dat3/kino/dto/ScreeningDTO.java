@@ -19,6 +19,7 @@ public class ScreeningDTO {
     private int movieId;
     private int cinemaId;
     private int screenId;
+    private boolean is3D; // Added field to include is3D information
 
     public ScreeningDTO(Screening screening, boolean includeAll) {
         this.id = screening.getId();
@@ -26,6 +27,6 @@ public class ScreeningDTO {
         this.movieId = screening.getMovie().getId();
         this.cinemaId = screening.getCinema().getId();
         this.screenId = screening.getScreen().getId();
+        this.is3D = screening.is3D();
     }
 }
-
