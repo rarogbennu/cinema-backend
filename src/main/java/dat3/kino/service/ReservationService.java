@@ -4,12 +4,12 @@ import dat3.kino.dto.ReservationDTO;
 import dat3.kino.entity.Reservation;
 import dat3.kino.entity.Screening;
 import dat3.kino.entity.Seat;
-import dat3.kino.entity.TotalReservation;
+import dat3.kino.entity.Booking;
 import dat3.kino.entity.PriceCategory;
 import dat3.kino.repository.ReservationRepository;
 import dat3.kino.repository.ScreeningRepository;
 import dat3.kino.repository.SeatRepository;
-import dat3.kino.repository.TotalReservationRepository;
+import dat3.kino.repository.BookingRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,15 +23,15 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final ScreeningRepository screeningRepository;
     private final SeatRepository seatRepository;
-    private final TotalReservationRepository totalReservationRepository;
+    private final BookingRepository bookingRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               ScreeningRepository screeningRepository,
-                              SeatRepository seatRepository, TotalReservationRepository totalReservationRepository) {
+                              SeatRepository seatRepository, BookingRepository bookingRepository) {
         this.reservationRepository = reservationRepository;
         this.screeningRepository = screeningRepository;
         this.seatRepository = seatRepository;
-        this.totalReservationRepository = totalReservationRepository;
+        this.bookingRepository = bookingRepository;
 
     }
 
@@ -56,24 +56,24 @@ public class ReservationService {
         // Calculate reservation price
         double reservationPrice = calculateReservationPrice(screening, seat);
 
-        // Create a new total reservation if it doesn't exist
-        TotalReservation totalReservation = new TotalReservation();
-        totalReservationRepository.save(totalReservation);
+        // Create a new booking if it doesn't exist
+        Booking booking = new Booking();
+        bookingRepository.save(booking);
 
         // Create the reservation
         Reservation reservation = new Reservation();
         reservation.setScreening(screening);
         reservation.setSeat(seat);
         reservation.setDummyUser(reservationDTO.getDummyUser());
-        reservation.setTotalReservation(totalReservation);
+        reservation.setBooking(booking);
         reservation.setPrice(reservationPrice);
 
         // Save reservation
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        // Update total price in the associated TotalReservation
-        totalReservation.setTotalPrice(totalReservation.getTotalPrice() + reservationPrice);
-        totalReservationRepository.save(totalReservation);
+        // Update total price in the associated Booking
+        booking.setTotalPrice(booking.getTotalPrice() + reservationPrice);
+        bookingRepository.save(booking);
 
         // Convert saved reservation to DTO and return it
         return convertToDTO(savedReservation);

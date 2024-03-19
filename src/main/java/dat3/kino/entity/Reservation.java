@@ -29,8 +29,8 @@ public class Reservation {
     private Seat seat;
 
     @ManyToOne
-    @JoinColumn(name = "total_reservation_id")
-    private TotalReservation totalReservation; // Reference to the Order entity
+    @JoinColumn(name = "booking_id")
+    private Booking booking; // Reference to the Order entity
 
     private String dummyUser;
 
