@@ -2,7 +2,6 @@ package dat3.kino.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -14,14 +13,14 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "total_reservation")
-public class TotalReservation {
+@Table(name = "booking")
+public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToMany(mappedBy = "totalReservation", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "booking", fetch = FetchType.EAGER)
     private List<Reservation> reservations;
 
     @CreationTimestamp
@@ -37,7 +36,7 @@ public class TotalReservation {
     // Add total price field
     private double totalPrice;
 
-    public TotalReservation() {
+    public Booking() {
         this.reservations = new ArrayList<>(); // Initialize the reservations list
         this.totalPrice = 0.0; // Initialize total price
     }
@@ -46,7 +45,7 @@ public class TotalReservation {
         // Add the reservation to the list of reservations
         reservations.add(reservation);
         // Set the order of the reservation
-        reservation.setTotalReservation(this);
+        reservation.setBooking(this);
         // Update total price
         calculateTotalPrice();
     }
