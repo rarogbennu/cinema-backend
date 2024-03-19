@@ -1,6 +1,7 @@
 package dat3.kino.api;
 
 import dat3.kino.dto.ReservationDTO;
+import dat3.kino.dto.TotalReservationDTO;
 import dat3.kino.service.ReservationService;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,11 +38,19 @@ public class ReservationController {
         return reservationService.getReservationById(id);
     }
 
-    @Operation(summary = "Create a new reservation", description = "Create a new reservation")
+//    @Operation(summary = "Create a new reservation", description = "Create a new reservation")
+//    @PostMapping
+//    public ReservationDTO createReservation(@RequestBody ReservationDTO reservationDTO) {
+//        return reservationService.createReservation(reservationDTO);
+//    }
+
+    @Operation(summary = "Create a new reservation or multiple reservations and group them into one total reservation", description = "Create a new reservation or multiple reservations and group them into one total reservation")
     @PostMapping
-    public ReservationDTO createReservation(@RequestBody ReservationDTO reservationDTO) {
-        return reservationService.createReservation(reservationDTO);
+    public TotalReservationDTO createReservation(@RequestBody List<ReservationDTO> reservationDTOs) {
+        return reservationService.createReservation(reservationDTOs);
     }
+
+
 
     @Operation(summary = "Delete a reservation", description = "Delete a reservation by its ID")
     @ApiResponses(value = {

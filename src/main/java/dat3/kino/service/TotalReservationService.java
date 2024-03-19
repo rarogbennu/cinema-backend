@@ -34,43 +34,65 @@ public class TotalReservationService {
     }
 
 
-    public TotalReservationDTO createTotalReservation(List<Reservation> reservations) {
-        // Calculate the total price by summing up the prices of individual reservations
-        double totalPrice = reservations.stream()
-                .mapToDouble(Reservation::getPrice)
-                .sum();
+//    public TotalReservationDTO createTotalReservation(List<Reservation> reservations) {
+//        // Calculate the total price by summing up the prices of individual reservations
+//        double totalPrice = reservations.stream()
+//                .mapToDouble(Reservation::getPrice)
+//                .sum();
+//
+//        // Apply discounts based on the total number of reservations
+//        int orderSize = reservations.size();
+//        if (orderSize >= 6 && orderSize <= 10) {
+//            // No change in price
+//        } else if (orderSize >= 11) {
+//            totalPrice *= 0.95; // 5% discount for orders of 11 or more seats
+//        } else {
+//            totalPrice *= 1.05; // 5% additional charge for orders of 1-5 seats
+//        }
+//
+//        // Log totalPrice before saving
+//        System.out.println("Total Price Before Discount: " + totalPrice);
+//
+//        // Create and save TotalReservation
+//        TotalReservation totalReservation = new TotalReservation();
+//        totalReservation.setReservations(reservations);
+//        totalReservation.setTotalPrice(totalPrice);
+//
+//        // Save TotalReservation
+//        TotalReservation savedTotalReservation = totalReservationRepository.save(totalReservation);
+//
+//        // Log savedTotalReservation before updating total price
+//        System.out.println("TotalReservation Before Update: " + savedTotalReservation);
+//
+//        // Update total price in TotalReservation entity with the discounted price
+//        savedTotalReservation.setTotalPrice(totalPrice);
+//        savedTotalReservation = totalReservationRepository.save(savedTotalReservation);
+//
+//        // Log savedTotalReservation after updating total price
+//        System.out.println("TotalReservation After Update: " + savedTotalReservation);
+//
+//        return convertToDTO(savedTotalReservation);
+//    }
 
-        // Apply discounts based on the total number of reservations
-        int orderSize = reservations.size();
-        if (orderSize >= 6 && orderSize <= 10) {
-            // No change in price
-        } else if (orderSize >= 11) {
-            totalPrice *= 0.95; // 5% discount for orders of 11 or more seats
-        } else {
-            totalPrice *= 1.05; // 5% additional charge for orders of 1-5 seats
+    public TotalReservationDTO createTotalReservation(List<Reservation> reservations) {
+        // Opret eller hent en eksisterende TotalReservation
+        TotalReservation totalReservation = reservations.get(0).getTotalReservation();
+        if (totalReservation == null) {
+            totalReservation = new TotalReservation();
         }
 
-        // Log totalPrice before saving
-        System.out.println("Total Price Before Discount: " + totalPrice);
+        // Tilføj alle reservationer til den samme TotalReservation
+        for (Reservation reservation : reservations) {
+            totalReservation.addReservation(reservation);
+        }
 
-        // Create and save TotalReservation
-        TotalReservation totalReservation = new TotalReservation();
-        totalReservation.setReservations(reservations);
-        totalReservation.setTotalPrice(totalPrice);
+        // Beregn totalprisen for totalreservationen
+        totalReservation.calculateTotalPrice();
 
-        // Save TotalReservation
+        // Gem TotalReservation
         TotalReservation savedTotalReservation = totalReservationRepository.save(totalReservation);
 
-        // Log savedTotalReservation before updating total price
-        System.out.println("TotalReservation Before Update: " + savedTotalReservation);
-
-        // Update total price in TotalReservation entity with the discounted price
-        savedTotalReservation.setTotalPrice(totalPrice);
-        savedTotalReservation = totalReservationRepository.save(savedTotalReservation);
-
-        // Log savedTotalReservation after updating total price
-        System.out.println("TotalReservation After Update: " + savedTotalReservation);
-
+        // Konverter og returner den gemte TotalReservationDTO
         return convertToDTO(savedTotalReservation);
     }
 
