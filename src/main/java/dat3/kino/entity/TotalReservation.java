@@ -13,14 +13,14 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "booking")
-public class Booking {
+@Table(name = "total_reservation")
+public class TotalReservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToMany(mappedBy = "booking", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "totalReservation", fetch = FetchType.EAGER)
     private List<Reservation> reservations;
 
     @CreationTimestamp
@@ -36,7 +36,7 @@ public class Booking {
     // Add total price field
     private double totalPrice;
 
-    public Booking() {
+    public TotalReservation() {
         this.reservations = new ArrayList<>(); // Initialize the reservations list
         this.totalPrice = 0.0; // Initialize total price
     }
@@ -45,7 +45,7 @@ public class Booking {
         // Add the reservation to the list of reservations
         reservations.add(reservation);
         // Set the order of the reservation
-        reservation.setBooking(this);
+        reservation.setTotalReservation(this);
         // Update total price
         calculateTotalPrice();
     }

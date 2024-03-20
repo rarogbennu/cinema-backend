@@ -38,5 +38,15 @@ public class SeatController {
     public SeatDTO getSeatById(@PathVariable int id) {
         return seatService.getSeatById(id);
     }
+
+    @Operation(summary = "Get seats by screen ID", description = "Get a list of seats by screen ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found seats by screen ID"),
+            @ApiResponse(responseCode = "404", description = "No seats found for the provided screen ID")
+    })
+    @GetMapping("/screen/{screenId}")
+    public List<SeatDTO> getSeatsByScreenId(@PathVariable int screenId) {
+        return seatService.getSeatsByScreenId(screenId);
+    }
 }
 

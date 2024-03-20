@@ -1,7 +1,7 @@
 package dat3.kino.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import dat3.kino.entity.Booking;
+import dat3.kino.entity.TotalReservation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BookingDTO {
+public class TotalReservationDTO {
 
     private int id;
     private LocalDateTime created;
     private LocalDateTime edited;
     private double totalPrice;
 
-    public BookingDTO(Booking t, boolean includeAll) {
+    public TotalReservationDTO(TotalReservation t, boolean includeAll) {
         this.id = t.getId();
         this.totalPrice = t.getTotalPrice();
         if (includeAll) {

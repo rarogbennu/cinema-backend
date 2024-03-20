@@ -33,8 +33,19 @@ public class SeatService {
         return new SeatDTO(seat);
     }
 
+    public List<SeatDTO> getSeatsByScreenId(int screenId) {
+        List<Seat> seats = seatRepository.findByScreenId(screenId);
+        if (seats.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No seats found for the provided screen ID");
+        }
+        return seats.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     // Convert entity to DTO
     private SeatDTO convertToDTO(Seat seat) {
         return new SeatDTO(seat);
     }
+
 }
