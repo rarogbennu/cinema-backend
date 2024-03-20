@@ -1,9 +1,12 @@
 package dat3.kino.configuration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import dat3.kino.dto.ReservationDTO;
+import dat3.kino.dto.TotalReservationDTO;
 import dat3.kino.entity.*;
 import dat3.kino.repository.*;
 import dat3.kino.service.MovieService;
+import dat3.kino.service.ReservationService;
 import dat3.kino.service.TotalReservationService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -23,6 +26,7 @@ public class InitDataReservation implements ApplicationRunner {
     private final MovieService movieService;
     private final MovieRepository movieRepository;
     private final TotalReservationService totalReservationService;
+    private final ReservationService reservationService;
 
 
 
@@ -34,7 +38,8 @@ public class InitDataReservation implements ApplicationRunner {
                                TotalReservationRepository totalReservationRepository,
                                MovieService movieService,
                                MovieRepository movieRepository,
-                               TotalReservationService totalReservationService) {
+                               TotalReservationService totalReservationService,
+                               ReservationService reservationService) {
         this.cinemaRepository = cinemaRepository;
         this.screenRepository = screenRepository;
         this.screeningRepository = screeningRepository;
@@ -44,13 +49,14 @@ public class InitDataReservation implements ApplicationRunner {
         this.movieService = movieService;
         this.movieRepository = movieRepository;
         this.totalReservationService = totalReservationService;
+        this.reservationService = reservationService;
     }
 
     @Override
     public void run(ApplicationArguments args) throws JsonProcessingException {
         initMovies();
         initScreenings();
-//        initReservations();
+        initReservations();
 //        initTotalReservation();
 //        addReservationsToTotalReservationAndUpdate();
     }
@@ -94,6 +100,28 @@ public class InitDataReservation implements ApplicationRunner {
         screeningRepository.saveAll(List.of(screening1, screening2, screening3));
         System.out.println("Screenings updated successfully.");
     }
+
+    public void initReservations() {
+        // Define the reservation data as provided in the POST request
+        List<ReservationDTO> reservationDTOs = List.of(
+                new ReservationDTO(1, 1, "TestUser1"),
+                new ReservationDTO(1, 2, "TestUser1"),
+                new ReservationDTO(1, 3, "TestUser1")
+        );
+        List<ReservationDTO> reservationDTOs2 = List.of(
+                new ReservationDTO(2, 25, "TestUser1"),
+                new ReservationDTO(2, 26, "TestUser1"),
+                new ReservationDTO(2, 27, "TestUser1")
+        );
+
+        // Call the createReservation method to make reservations
+        TotalReservationDTO totalReservationDTO = reservationService.createReservation(reservationDTOs);
+        TotalReservationDTO totalReservationDTO2 = reservationService.createReservation(reservationDTOs2);
+        // Display confirmation or further processing
+        System.out.println("Reservations created successfully! Total Reservation ID: " + totalReservationDTO.getId());
+        System.out.println("Total Price: kr " + totalReservationDTO.getTotalPrice());
+    }
+
 
 //
 //    public void initReservations() {
