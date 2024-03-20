@@ -76,14 +76,14 @@ public class InitDataReservation implements ApplicationRunner {
         Cinema cinemaRoskilde = cinemaRepository.findByName("Cinema Roskilde").orElseThrow(() -> new RuntimeException("Cinema Roskilde not found"));
         Screen screen1 = screenRepository.findByName("Screen 1").orElseThrow(() -> new RuntimeException("Screen 1 not found"));
         Screen screen2 = screenRepository.findByName("Screen 2").orElseThrow(() -> new RuntimeException("Screen 2 not found"));
-        Screen screen3 = screenRepository.findByName("Screen 3").orElseThrow(() -> new RuntimeException("Screen 3 not found"));
+        Screen screen4 = screenRepository.findByName("Screen 4").orElseThrow(() -> new RuntimeException("Screen 4 not found"));
 
         LocalDateTime now = LocalDateTime.now();
 
         // Create screenings using the found movies, cinemas, and screens
         Screening screening1 = new Screening(now, movie1, cinemaCopenhagen, screen1);
         Screening screening2 = new Screening(now.plusDays(1), movie2, cinemaCopenhagen, screen2);
-        Screening screening3 = new Screening(now.plusDays(2), movie3, cinemaRoskilde, screen3);
+        Screening screening3 = new Screening(now.plusDays(2), movie3, cinemaRoskilde, screen4);
 
         // Set some of the screenings as 3D
         screening1.set3D(true);
