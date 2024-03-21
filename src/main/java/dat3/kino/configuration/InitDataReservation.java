@@ -109,9 +109,9 @@ public class InitDataReservation implements ApplicationRunner {
                 new ReservationDTO(1, 3, "TestUser1")
         );
         List<ReservationDTO> reservationDTOs2 = List.of(
-                new ReservationDTO(2, 25, "TestUser1"),
-                new ReservationDTO(2, 26, "TestUser1"),
-                new ReservationDTO(2, 27, "TestUser1")
+                new ReservationDTO(2, 250, "TestUser1"),
+                new ReservationDTO(2, 251, "TestUser1"),
+                new ReservationDTO(2, 252, "TestUser1")
         );
 
         // Call the createReservation method to make reservations
