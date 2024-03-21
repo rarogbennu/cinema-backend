@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
-public class InitDataReservation implements ApplicationRunner {
+public class InitDataReservation {
     private final CinemaRepository cinemaRepository;
     private final ScreenRepository screenRepository;
     private final ScreeningRepository screeningRepository;
@@ -52,7 +52,6 @@ public class InitDataReservation implements ApplicationRunner {
         this.reservationService = reservationService;
     }
 
-    @Override
     public void run(ApplicationArguments args) throws JsonProcessingException {
         initMovies();
         initScreenings();

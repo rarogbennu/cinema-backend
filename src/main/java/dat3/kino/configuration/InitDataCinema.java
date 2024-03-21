@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class InitDataCinema implements ApplicationRunner {
+public class InitDataCinema {
 
     private final SeatRepository seatRepository;
     private final ScreenRepository screenRepository;
@@ -29,7 +29,6 @@ public class InitDataCinema implements ApplicationRunner {
         this.priceCategoryRepository = priceCategoryRepository;
     }
 
-@Override
     public void run(ApplicationArguments args) {
         initScreens();
         initCinemas();
