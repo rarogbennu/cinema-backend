@@ -38,6 +38,12 @@ public class ReservationController {
         return reservationService.getReservationById(id);
     }
 
+    @Operation(summary = "Get reservations by screening ID", description = "Get reservations for a given screening ID")
+    @GetMapping("/screening/{screeningId}")
+    public List<ReservationDTO> getReservationsByScreeningId(@PathVariable int screeningId) {
+        return reservationService.getReservationsByScreeningId(screeningId);
+    }
+
 //    @Operation(summary = "Create a new reservation", description = "Create a new reservation")
 //    @PostMapping
 //    public ReservationDTO createReservation(@RequestBody ReservationDTO reservationDTO) {

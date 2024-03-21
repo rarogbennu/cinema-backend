@@ -22,6 +22,13 @@ public class ReservationDTO {
     private LocalDateTime created;
     private LocalDateTime edited;
 
+    // Constructor to accept screeningId, seatId, and dummyUser
+    public ReservationDTO(int screeningId, int seatId, String dummyUser) {
+        this.screeningId = screeningId;
+        this.seatId = seatId;
+        this.dummyUser = dummyUser;
+    }
+
     public ReservationDTO(Reservation r, boolean includeAll) {
         this.id = r.getId();
         this.screeningId = r.getScreening().getId();

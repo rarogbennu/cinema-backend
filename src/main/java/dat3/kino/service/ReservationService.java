@@ -1,6 +1,7 @@
 package dat3.kino.service;
 
 import dat3.kino.dto.ReservationDTO;
+import dat3.kino.dto.ScreeningDTO;
 import dat3.kino.dto.TotalReservationDTO;
 import dat3.kino.entity.Reservation;
 import dat3.kino.entity.Screening;
@@ -184,5 +185,11 @@ public class ReservationService {
         return Integer.parseInt(parts[0]);
     }
 
+    public List<ReservationDTO> getReservationsByScreeningId(int screeningId) {
+        Screening screening = screeningRepository.findById(screeningId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Screening not found"));
+        List<Reservation> reservations = reservationRepository.findByScreeningId(screeningId);
+        return convertToDTOs(reservations);
+    }
 }
 
