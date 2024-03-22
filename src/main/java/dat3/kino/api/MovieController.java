@@ -32,7 +32,7 @@ public class MovieController {
     }
 
     @PostMapping("/api/{imdbId}")
-    public Movie addMovie(@PathVariable String imdbId) throws JsonProcessingException {
+    public Movie addMovie(@PathVariable("imdbId") String imdbId) throws JsonProcessingException {
         return movieService.addMovie(imdbId);
     }
 
