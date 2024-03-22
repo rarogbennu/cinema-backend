@@ -122,9 +122,20 @@ public class ReservationService {
 
         // Loop through reservationDTOs and create/save reservations
         for (ReservationDTO reservationDTO : reservationDTOs) {
-            // Find screening and seat
+
             Screening screening = screeningRepository.findById(reservationDTO.getScreeningId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Screening not found"));
+
+            // Check if the seat belongs to the screen where the screening takes place
+            if (!seatBelongsToScreen(reservationDTO.getSeatId(), screening.getScreen().getId())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seat does not belong to the screen");
+
+            }
+            if (reservationRepository.existsBySeatIdAndScreeningId(reservationDTO.getSeatId(), reservationDTO.getScreeningId())) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Reservation already exists for this seat and screening");
+            }
+            // Find screening and seat
+
             Seat seat = seatRepository.findById(reservationDTO.getSeatId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
 
@@ -165,6 +176,19 @@ public class ReservationService {
 
         // Convert and return the saved total reservation DTO
         return convertTotalReservationToDTO(totalReservation);
+    }
+
+    /**
+     * Checks if a seat belongs to the specified screen.
+     *
+     * @param seatId   The ID of the seat.
+     * @param screenId The ID of the screen.
+     * @return True if the seat belongs to the screen, false otherwise.
+     */
+    private boolean seatBelongsToScreen(int seatId, int screenId) {
+        Seat seat = seatRepository.findById(seatId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Seat not found"));
+        return seat.getScreen().getId() == screenId;
     }
 
     /**
