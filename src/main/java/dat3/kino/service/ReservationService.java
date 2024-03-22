@@ -92,7 +92,7 @@ public class ReservationService {
 
         // Loop through reservationDTOs and create/save reservations
         for (ReservationDTO reservationDTO : reservationDTOs) {
-            // Find screening og seat
+            // Find screening and seat
             Screening screening = screeningRepository.findById(reservationDTO.getScreeningId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Screening not found"));
             Seat seat = seatRepository.findById(reservationDTO.getSeatId())
@@ -116,12 +116,24 @@ public class ReservationService {
 
         // Update total price in the associated TotalReservation
         double totalPrice = savedReservations.stream().mapToDouble(Reservation::getPrice).sum();
+
+        // Apply discounts based on the total number of reservations
+        int orderSize = savedReservations.size();
+        if (orderSize >= 6 && orderSize <= 10) {
+            // No change in price
+        } else if (orderSize >= 11) {
+            totalPrice *= 0.95; // 5% discount for orders of 11 or more seats
+        } else {
+            totalPrice *= 1.05; // 5% additional charge for orders of 1-5 seats
+        }
+
         totalReservation.setTotalPrice(totalPrice);
         totalReservationRepository.save(totalReservation);
 
         // Convert and return the saved total reservation
         return convertTotalReservationToDTO(totalReservation);
     }
+
 
 
     public void deleteReservation(int id) {

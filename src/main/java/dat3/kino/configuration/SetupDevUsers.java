@@ -9,7 +9,7 @@ import org.springframework.stereotype.Controller;
 import dat3.security.repository.UserWithRolesRepository;
 
 @Controller
-public class SetupDevUsers {
+public class SetupDevUsers implements ApplicationRunner {
 
     UserWithRolesRepository userWithRolesRepository;
     PasswordEncoder passwordEncoder;
@@ -21,6 +21,7 @@ public class SetupDevUsers {
         passwordUsedByAll = "test12";
     }
 
+    @Override
     public void run(ApplicationArguments args) {
         setupUserWithRoleUsers();
     }
