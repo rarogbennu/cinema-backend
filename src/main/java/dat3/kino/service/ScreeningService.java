@@ -13,6 +13,9 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This service class provides methods to perform operations related to screenings.
+ */
 @Service
 public class ScreeningService {
 
@@ -21,6 +24,14 @@ public class ScreeningService {
     private final CinemaRepository cinemaRepository;
     private final ScreenRepository screenRepository;
 
+    /**
+     * Constructs a new ScreeningService with the specified repositories.
+     *
+     * @param screeningRepository The repository for accessing screening data.
+     * @param movieRepository     The repository for accessing movie data.
+     * @param cinemaRepository    The repository for accessing cinema data.
+     * @param screenRepository    The repository for accessing screen data.
+     */
     public ScreeningService(ScreeningRepository screeningRepository,
                             MovieRepository movieRepository,
                             CinemaRepository cinemaRepository,
@@ -31,6 +42,11 @@ public class ScreeningService {
         this.screenRepository = screenRepository;
     }
 
+    /**
+     * Retrieves all screenings and converts them to DTOs.
+     *
+     * @return A list of ScreeningDTOs representing all screenings.
+     */
     public List<ScreeningDTO> getAllScreenings() {
         List<Screening> screenings = screeningRepository.findAll();
         return screenings.stream()
@@ -38,12 +54,25 @@ public class ScreeningService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a screening by its ID.
+     *
+     * @param id The ID of the screening to retrieve.
+     * @return The ScreeningDTO representing the screening with the specified ID.
+     * @throws ResponseStatusException If the screening with the given ID is not found.
+     */
     public ScreeningDTO getScreeningById(int id) {
         Screening screening = screeningRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Screening not found"));
         return new ScreeningDTO(screening, false);
     }
 
+    /**
+     * Retrieves all screenings associated with a cinema.
+     *
+     * @param cinemaId The ID of the cinema.
+     * @return A list of ScreeningDTOs representing all screenings associated with the specified cinema.
+     */
     public List<ScreeningDTO> getScreeningsByCinemaId(int cinemaId) {
         List<Screening> screenings = screeningRepository.findByCinemaId(cinemaId);
         return screenings.stream()
@@ -51,6 +80,13 @@ public class ScreeningService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Creates a new screening.
+     *
+     * @param screeningDTO The DTO containing information about the screening to be created.
+     * @return The ScreeningDTO representing the created screening.
+     * @throws ResponseStatusException If the associated movie, cinema, or screen is not found.
+     */
     public ScreeningDTO createScreening(ScreeningDTO screeningDTO) {
         Screening screening = new Screening();
         screening.setDate(screeningDTO.getDate());
@@ -65,7 +101,12 @@ public class ScreeningService {
         return convertToDTO(savedScreening);
     }
 
-
+    /**
+     * Deletes a screening by its ID.
+     *
+     * @param id The ID of the screening to delete.
+     * @throws ResponseStatusException If the screening with the given ID is not found.
+     */
     public void deleteScreening(int id) {
         if (!screeningRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Screening not found");
@@ -73,7 +114,12 @@ public class ScreeningService {
         screeningRepository.deleteById(id);
     }
 
-    // Convert entity to DTO
+    /**
+     * Converts a screening entity to a DTO.
+     *
+     * @param screening The screening entity to convert.
+     * @return The corresponding ScreeningDTO.
+     */
     private ScreeningDTO convertToDTO(Screening screening) {
         ScreeningDTO dto = new ScreeningDTO();
         dto.setId(screening.getId());
@@ -84,11 +130,16 @@ public class ScreeningService {
         return dto;
     }
 
-
-    // Get List of DTOs
+    /**
+     * Converts a list of screening entities to DTOs.
+     *
+     * @param screenings The list of screening entities to convert.
+     * @return A list of ScreeningDTOs representing the screenings.
+     */
     private List<ScreeningDTO> convertToDTOs(List<Screening> screenings) {
         return screenings.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 }
+

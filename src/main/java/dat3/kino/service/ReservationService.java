@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This service class provides methods related to reservations.
+ */
 @Service
 public class ReservationService {
 
@@ -28,6 +31,14 @@ public class ReservationService {
     private final SeatRepository seatRepository;
     private final TotalReservationRepository totalReservationRepository;
 
+    /**
+     * Constructs a new ReservationService with the specified repositories.
+     *
+     * @param reservationRepository    The repository for accessing reservation data.
+     * @param screeningRepository     The repository for accessing screening data.
+     * @param seatRepository          The repository for accessing seat data.
+     * @param totalReservationRepository  The repository for accessing total reservation data.
+     */
     public ReservationService(ReservationRepository reservationRepository,
                               ScreeningRepository screeningRepository,
                               SeatRepository seatRepository, TotalReservationRepository totalReservationRepository) {
@@ -38,16 +49,29 @@ public class ReservationService {
 
     }
 
+    /**
+     * Retrieves all reservations.
+     *
+     * @return A list of all reservations.
+     */
     public List<ReservationDTO> getAllReservations() {
         List<Reservation> reservations = reservationRepository.findAll();
         return convertToDTOs(reservations);
     }
 
+    /**
+     * Retrieves a reservation by its ID.
+     *
+     * @param id The ID of the reservation to retrieve.
+     * @return The reservation with the specified ID.
+     * @throws ResponseStatusException If the reservation is not found.
+     */
     public ReservationDTO getReservationById(int id) {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
         return convertToDTO(reservation);
     }
+
 
 //    public ReservationDTO createReservation(ReservationDTO reservationDTO) {
 //        // Find screening and seat
@@ -82,6 +106,12 @@ public class ReservationService {
 //        return convertToDTO(savedReservation);
 //    }
 
+    /**
+     * Creates a new total reservation based on the provided list of reservation DTOs.
+     *
+     * @param reservationDTOs The list of reservation DTOs representing the reservations to create.
+     * @return The DTO representing the total reservation containing the created reservations.
+     */
     public TotalReservationDTO createReservation(List<ReservationDTO> reservationDTOs) {
         // Create a new total reservation
         TotalReservation totalReservation = new TotalReservation();
@@ -92,7 +122,7 @@ public class ReservationService {
 
         // Loop through reservationDTOs and create/save reservations
         for (ReservationDTO reservationDTO : reservationDTOs) {
-            // Find screening og seat
+            // Find screening and seat
             Screening screening = screeningRepository.findById(reservationDTO.getScreeningId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Screening not found"));
             Seat seat = seatRepository.findById(reservationDTO.getSeatId())
@@ -133,11 +163,16 @@ public class ReservationService {
         totalReservation.setTotalPrice(totalPrice);
         totalReservationRepository.save(totalReservation);
 
-        // Convert and return the saved total reservation
+        // Convert and return the saved total reservation DTO
         return convertTotalReservationToDTO(totalReservation);
     }
 
-
+    /**
+     * Deletes a reservation by its ID.
+     *
+     * @param id The ID of the reservation to delete.
+     * @throws ResponseStatusException If the reservation is not found.
+     */
     public void deleteReservation(int id) {
         if (!reservationRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
@@ -145,28 +180,49 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    // Convert entity to DTO
+    /**
+     * Converts a Reservation entity to its corresponding DTO.
+     *
+     * @param reservation The reservation entity to convert.
+     * @return The DTO representing the reservation.
+     */
     private ReservationDTO convertToDTO(Reservation reservation) {
         return new ReservationDTO(reservation, true);
     }
 
-    // Get List of DTOs
+    /**
+     * Converts a list of Reservation entities to a list of ReservationDTOs.
+     *
+     * @param reservations The list of reservation entities to convert.
+     * @return The list of DTOs representing the reservations.
+     */
     private List<ReservationDTO> convertToDTOs(List<Reservation> reservations) {
         return reservations.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    // Metode til at konvertere TotalReservation til TotalReservationDTO
+    /**
+     * Converts a TotalReservation entity to its corresponding DTO.
+     *
+     * @param totalReservation The total reservation entity to convert.
+     * @return The DTO representing the total reservation.
+     */
     private TotalReservationDTO convertTotalReservationToDTO(TotalReservation totalReservation) {
         TotalReservationDTO totalReservationDTO = new TotalReservationDTO();
         totalReservationDTO.setId(totalReservation.getId());
         totalReservationDTO.setTotalPrice(totalReservation.getTotalPrice());
-        // Andre felter kan tilføjes efter behov
+        // Additional fields can be added as needed
         return totalReservationDTO;
     }
 
-
+    /**
+     * Calculates the price of a reservation based on the given screening and seat.
+     *
+     * @param screening The screening associated with the reservation.
+     * @param seat      The seat reserved.
+     * @return The calculated price of the reservation.
+     */
     public double calculateReservationPrice(Screening screening, Seat seat) {
         // Fetch the associated price category for the seat
         PriceCategory priceCategory = seat.getPriceCategory();
@@ -187,18 +243,35 @@ public class ReservationService {
         return basePrice;
     }
 
-    // Method to check if a movie is considered long based on its runtime
+    /**
+     * Checks if a movie is considered long based on its runtime.
+     *
+     * @param runtime The runtime of the movie.
+     * @return True if the movie is considered long, false otherwise.
+     */
     private boolean isLongMovie(String runtime) {
         int movieRuntime = extractMovieRuntime(runtime);
         return movieRuntime > 150;
     }
 
-    // Method to extract movie runtime without the " min" suffix
+
+    /**
+     * Extracts the movie runtime without the " min" suffix.
+     *
+     * @param runtime The runtime string of the movie.
+     * @return The integer value representing the movie runtime.
+     */
     private int extractMovieRuntime(String runtime) {
         String[] parts = runtime.split(" ");
         return Integer.parseInt(parts[0]);
     }
 
+    /**
+     * Retrieves reservations for a specific screening.
+     *
+     * @param screeningId The ID of the screening.
+     * @return A list of reservation DTOs for the specified screening.
+     */
     public List<ReservationDTO> getReservationsByScreeningId(int screeningId) {
         Screening screening = screeningRepository.findById(screeningId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Screening not found"));

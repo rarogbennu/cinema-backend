@@ -1,0 +1,16 @@
+dat3
+dat3.kino.api
+dat3.kino.api_facade
+dat3.kino.configuration
+dat3.kino.dto
+dat3.kino.entity
+dat3.kino.repository
+dat3.kino.service
+dat3.security.api
+dat3.security.config
+dat3.security.dto
+dat3.security.entity
+dat3.security.error
+dat3.security.for_security_tests
+dat3.security.repository
+dat3.security.service
