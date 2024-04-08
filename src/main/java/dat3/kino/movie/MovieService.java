@@ -1,7 +1,6 @@
 package dat3.kino.movie;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import dat3.kino.api_facade.OmdbFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

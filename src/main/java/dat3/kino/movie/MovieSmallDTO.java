@@ -1,4 +1,4 @@
-package dat3.kino.api_facade;
+package dat3.kino.movie;
 
 import lombok.Getter;
 import lombok.Setter;

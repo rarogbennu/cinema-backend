@@ -1,4 +1,4 @@
-package dat3.kino.api_facade;
+package dat3.kino.movie;
 
 import dat3.kino.movie.MovieOmdbResponse;
 import org.springframework.beans.factory.annotation.Value;
