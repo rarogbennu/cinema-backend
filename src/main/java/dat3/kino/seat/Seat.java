@@ -1,0 +1,28 @@
+package dat3.kino.seat;
+
+import dat3.kino.priceCategory.PriceCategory;
+import dat3.kino.screen.Screen;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+@Table(name = "seat")
+public class Seat {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int id;
+
+    @ManyToOne
+    @JoinColumn(name = "screen_id")
+    private Screen screen;
+
+    @ManyToOne
+    @JoinColumn(name = "price_category_id")
+    private PriceCategory priceCategory;
+}

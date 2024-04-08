@@ -1,13 +1,13 @@
 package dat3.kino.configuration;
 
-import dat3.kino.entity.Cinema;
-import dat3.kino.entity.Screen;
-import dat3.kino.entity.Seat;
-import dat3.kino.entity.PriceCategory;
-import dat3.kino.repository.CinemaRepository;
-import dat3.kino.repository.ScreenRepository;
-import dat3.kino.repository.SeatRepository;
-import dat3.kino.repository.PriceCategoryRepository;
+import dat3.kino.cinema.Cinema;
+import dat3.kino.screen.Screen;
+import dat3.kino.seat.Seat;
+import dat3.kino.priceCategory.PriceCategory;
+import dat3.kino.cinema.CinemaRepository;
+import dat3.kino.screen.ScreenRepository;
+import dat3.kino.seat.SeatRepository;
+import dat3.kino.priceCategory.PriceCategoryRepository;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
