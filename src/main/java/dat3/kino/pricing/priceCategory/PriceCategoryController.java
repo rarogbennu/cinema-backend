@@ -1,4 +1,4 @@
-package dat3.kino.priceCategory;
+package dat3.kino.pricing.priceCategory;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,4 +1,4 @@
-package dat3.kino.priceCategory;
+package dat3.kino.pricing.priceCategory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

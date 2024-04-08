@@ -1,6 +1,6 @@
 package dat3.kino.seat;
 
-import dat3.kino.priceCategory.PriceCategory;
+import dat3.kino.pricing.priceCategory.PriceCategory;
 import dat3.kino.screen.Screen;
 import jakarta.persistence.*;
 import lombok.Getter;

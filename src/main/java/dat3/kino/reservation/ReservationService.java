@@ -4,7 +4,7 @@ import dat3.kino.totalReservation.TotalReservationDTO;
 import dat3.kino.screening.Screening;
 import dat3.kino.seat.Seat;
 import dat3.kino.totalReservation.TotalReservation;
-import dat3.kino.priceCategory.PriceCategory;
+import dat3.kino.pricing.priceCategory.PriceCategory;
 import dat3.kino.screening.ScreeningRepository;
 import dat3.kino.seat.SeatRepository;
 import dat3.kino.totalReservation.TotalReservationRepository;
